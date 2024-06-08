@@ -6,6 +6,9 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Newtonsoft.Json;
+using System.Text;
+using Newtonsoft.Json.Linq;
+
 
 [Serializable]
 public class JSONData{
@@ -15,50 +18,30 @@ public class JSONData{
     public string config;
 }
 
-
 [Serializable]
 public class ImageData{
-    public string images;
+    public string[] images;
 }
 
 public class imageChange : MonoBehaviour
 {
     public GameObject obj;
-    RawImage rawImage;
-    // Start is called before the first frame update
-    void Start()
-    {
-        //StartCoroutine(httpConnect());
-        rawImage = GetComponent<RawImage>();
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public RawImage rawImage;
 
     public void onClicked() 
     {
         StartCoroutine(PostConnect());
-        //StartCoroutine(httpConnect());
-        //StartCoroutine(httpConnectTest());
-        //rawIamge = GetComponent<RawImage>();
     }
 
-    public void changeField () {
-        
-    }
     IEnumerator PostConnect() {
         UnityWebRequest www = new UnityWebRequest();
-        string prompt = "{\"prompt\" : \"rabbit\", \"steps\": 5}";
-        byte[] payload = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(prompt));
-        
+        string prompt = "{\"prompt\" : \"rabbit\", \"steps\": 20}";
+        byte[] payload = System.Text.Encoding.UTF8.GetBytes(prompt);
+
         UploadHandlerRaw uploader = new UploadHandlerRaw(payload);
-        www.url = "http://192.168.25.10:7860/sdapi/v1/txt2img"; //site
+        www.url = "http://192.168.0.10:7864/sdapi/v1/txt2img"; //site
         www.method= UnityWebRequest.kHttpVerbPOST;
-        uploader.contentType = "Content-Type: application/json";
+        uploader.contentType = "application/json";
         
         www.uploadHandler = uploader;
 
@@ -71,17 +54,15 @@ public class imageChange : MonoBehaviour
             Debug.Log(www.downloadHandler.text);
         } else {
             Debug.Log(www.downloadHandler.text);
-            Debug.Log("앨랠래");
             ImageData image = JsonConvert.DeserializeObject<ImageData>(www.downloadHandler.text);
             Debug.Log(image.images);
-            Byte[] imageByte = Convert.FromBase64String(image.images);
+            Byte[] imageByte = Convert.FromBase64String(image.images[0]);
             Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT5, false);
             tex.LoadImage(imageByte);
             rawImage.texture = tex;
         }
     }
 
-   
     IEnumerator httpConnect()
     {
         string url = @"https://http.cat/" + obj.GetComponent<TMP_InputField>().text;
@@ -102,7 +83,7 @@ public class imageChange : MonoBehaviour
 
     IEnumerator httpConnectTest()
     {
-        string url ="http://192.168.25.10:7860/sdapi/v1/sd-models";
+        string url = "http://192.168.0.10:7864/sdapi/v1/sd-models";
         UnityWebRequest www = UnityWebRequest.Get(url);
 
 
@@ -111,7 +92,8 @@ public class imageChange : MonoBehaviour
         if(www.result == UnityWebRequest.Result.Success) {
             Debug.Log(www.downloadHandler.text);
             JSONData[] jsonData = JsonConvert.DeserializeObject<JSONData[]>(www.downloadHandler.text);
-            
+
+            Debug.Log(jsonData[0]);
             Debug.Log(jsonData[0].ToString());
             Debug.Log(jsonData[0].title);
             Debug.Log(jsonData[0].model_name);
