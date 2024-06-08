@@ -2009,7 +2009,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1948196711}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: imageChange, Assembly-CSharp
         m_MethodName: onClicked
         m_Mode: 1
@@ -2068,11 +2068,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1948196706}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcd3c1ffa53b48e46b91a26a7f0e4083, type: 3}
+  m_Script: {fileID: 11500000, guid: 4424eed6d6e745347b590b0df2b027d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   obj: {fileID: 219234036}
-  obj2: {fileID: 1628909795}
+  rawImage: {fileID: 1628909799}
 --- !u!1 &2068238913
 GameObject:
   m_ObjectHideFlags: 0
