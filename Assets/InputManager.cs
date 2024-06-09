@@ -1,28 +1,71 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
+// 프롬프트, 스텝, 스케일, 모델, 로라를 관리하는 매니저
 public class InputManager : MonoBehaviour
 {
-    public GameObject promptObj;
-    public GameObject stepObj;
-    public GameObject modelObj;
+    [SerializeField]
+    private GameObject promptObj;
+    [SerializeField]
+    private GameObject stepObj;
+    [SerializeField]
+    private GameObject scaleObj;
+    [SerializeField]
+    private TMP_Dropdown modelDropdown;
+    [SerializeField]
+    private TMP_Dropdown loraDropdown;
+    [SerializeField]
+    private Toggle loraToggle;
 
     private JSONModelData[] models;
     private JSONLoraData[] loras;
 
-    [SerializeField]
-    private TextMeshProUGUI TMPObJ;
-    [SerializeField]
-    private TMP_Dropdown dropdown;
-
+    // GET한 모델을 드롭다운으로 변환
     public void LoadModels(JSONModelData[] jsonData)
     {
         models = jsonData;
+
+        modelDropdown.ClearOptions();
+        List<TMP_Dropdown.OptionData> optionList = new List<TMP_Dropdown.OptionData>();
+
+        foreach (JSONModelData model in models)
+        {
+            optionList.Add(new TMP_Dropdown.OptionData(model.model_name));
+        }
+
+        modelDropdown.AddOptions(optionList);
+
+        modelDropdown.value = 0;
     }
 
+    // GET된 로라를 드롭다운으로 변환
     public void LoadLoras(JSONLoraData[] jsonData)
     {
         loras = jsonData;
+        loraToggle.isOn = true;
+
+        loraDropdown.ClearOptions();
+        List<TMP_Dropdown.OptionData> optionList = new List<TMP_Dropdown.OptionData>();
+
+        foreach (JSONLoraData lora in loras)
+        {
+            optionList.Add(new TMP_Dropdown.OptionData(lora.name));
+        }
+
+        loraDropdown.AddOptions(optionList);
+
+        loraDropdown.value = 0;
+    }
+
+    public Boolean isLoraUsing()
+    {
+        if (loraToggle.isOn == true)
+            return true;
+        else
+            return false;
     }
 
     public string GetPrompt()
@@ -34,35 +77,20 @@ public class InputManager : MonoBehaviour
     {
         return stepObj.GetComponent<TMP_InputField>().text;
     }
+    public string GetScale()
+    {
+        return scaleObj.GetComponent<TMP_InputField>().text;
+    }
 
     public string GetModel()
     {
-        return promptObj.GetComponent<TMP_InputField>().text;
+        int index = modelDropdown.value;
+        return modelDropdown.GetComponent<TMP_Dropdown>().options[index].text;
     }
 
-   
-
-    //public void OnDropdownEvent(int index)
-    //{
-    //    TMPObJ.text = $"Dropdown Value : {index}";
-    //}
-
-    //private void Awake()
-    //{
-    //    dropdown.ClearOptions();
-    //    List<TMP_Dropdown.OptionData> optionList = new List<TMP_Dropdown.OptionData>();
-
-    //    // arrayClass 배열에 있는 모든 문자열 데이터를 불러와서 optionList에 저장
-    //    foreach (string str in arrayClass)
-    //    {
-    //        optionList.Add(new TMP_Dropdown.OptionData(str));
-    //    }
-
-    //    // 위에서 생성한 optionList를 dropdown의 옵션 값에 추가
-    //    dropdown.AddOptions(optionList);
-
-    //    // 현재 dropdown에 선택된 옵션을 0번으로 설정
-    //    dropdown.value = 0;
-    //}
-
+    public string GetLora()
+    {
+        int index = loraDropdown.value;
+        return loraDropdown.GetComponent<TMP_Dropdown>().options[index].text;
+    }
 }
